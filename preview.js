@@ -1,19 +1,19 @@
 const app = new Vue({
-    el: '#app',
+    el: "#app",
     vuetify: new Vuetify({
-        theme: { dark: true }
+        theme: { dark: true },
     }),
     data: {
         isShowTop: true,
         drawer: false,
         cacheDialog: false,
-        cacheTitle: '',
+        cacheTitle: "",
         cacheHeaders: [
-            { text: 'Type', value: 'type' },
-            { text: 'Name', value: 'name' },
-            { text: 'Preivew', value: 'preview' },
-            { text: 'ID', value: 'id' },
-            { text: 'Size', value: 'size' },
+            { text: "Type", value: "type" },
+            { text: "Name", value: "name" },
+            { text: "Preivew", value: "preview" },
+            { text: "ID", value: "id" },
+            { text: "Size", value: "size" },
         ],
         cacheRawData: [],
         cacheData: [],
@@ -27,7 +27,8 @@ const app = new Vue({
         componentsSchema: [],
     },
     created() {
-        if (window.innerHeight === window.outerHeight) { // 手机端，chrome device模式
+        // 手机端，chrome device模式
+        if (window.innerHeight === window.outerHeight) {
             this.isShowTop = false;
         }
         this.waitCCInit().then(() => {
@@ -40,19 +41,19 @@ const app = new Vue({
     watch: {
         cacheOnlyTexture() {
             this.updateCacheData();
-        }
+        },
     },
     computed: {
         treeFilter() {
             return (item, search, textKey) => item[textKey].indexOf(search) > -1;
         },
         selectedNode() {
-            if (!this.selectedNodes.length) return undefined
+            if (!this.selectedNodes.length) return undefined;
             let node = getNodeById(this.selectedNodes[0]);
             if (node) {
                 if (!node.hex_color) {
-                    cc.js.getset(node, 'hex_color', () => {
-                        return '#' + node.color.toHEX('#rrggbb');
+                    cc.js.getset(node, "hex_color", () => {
+                        return "#" + node.color.toHEX("#rrggbb");
                     }, (hex) => {
                         node.color = new cc.Color().fromHEX(hex);
                     }, false, true);
@@ -64,7 +65,7 @@ const app = new Vue({
                     if (this.selectedNodes.length > 0 && this.selectedNodes[0] === node._id) {
                         this.selectedNodes.pop();
                     }
-                }
+                };
                 this.nodeSchema = NEX_CONFIG.nodeSchema.node2d;
                 let componentsSchema = [];
                 for (let component of node._components) {
@@ -72,10 +73,10 @@ const app = new Vue({
                     if (schema) {
                         node[schema.key] = node.getComponent(schema.key);
                         for (let i = 0; i < schema.rows.length; i++) {
-                            if (schema.rows[i].type === 'color') {
+                            if (schema.rows[i].type === "color") {
                                 if (!node[schema.key][schema.rows[i].key]) {
                                     cc.js.getset(node[schema.key], schema.rows[i].key, () => {
-                                        return '#' + node.getComponent(schema.key)[schema.rows[i].rawKey].toHEX('#rrggbb');
+                                        return "#" + node.getComponent(schema.key)[schema.rows[i].rawKey].toHEX("#rrggbb");
                                     }, (hex) => {
                                         node.getComponent(schema.key)[schema.rows[i].rawKey] = new cc.Color().fromHEX(hex);
                                     }, false, true);
@@ -85,7 +86,7 @@ const app = new Vue({
                     } else {
                         schema = {
                             title: component.__classname__,
-                            key: component.__classname__
+                            key: component.__classname__,
                         };
                         node[schema.key] = node.getComponent(schema.key);
                     }
@@ -121,28 +122,28 @@ const app = new Vue({
         },
         outputNodeHandler(id) {
             let i = 1;
-            while (window['temp' + i] !== undefined) {
+            while (window["temp" + i] !== undefined) {
                 i++;
             }
-            window['temp' + i] = this.selectedNode;
-            console.log('temp' + i);
-            console.log(window['temp' + i]);
+            window["temp" + i] = this.selectedNode;
+            console.info("temp" + i);
+            console.info(window["temp" + i]);
         },
         outputComponentHandler(component) {
             let i = 1;
-            while (window['temp' + i] !== undefined) {
+            while (window["temp" + i] !== undefined) {
                 i++;
             }
-            window['temp' + i] = this.selectedNode.getComponent(component);
-            console.log('temp' + i);
-            console.log(window['temp' + i]);
+            window["temp" + i] = this.selectedNode.getComponent(component);
+            console.info("temp" + i);
+            console.info(window["temp" + i]);
         },
         drawNodeRect() {
             cc.where(this.selectedNode);
         },
         updateCacheData() {
             if (this.$data.cacheOnlyTexture) {
-                this.$data.cacheData = this.$data.cacheRawData.filter(item => item.type === 'cc.Texture2D');
+                this.$data.cacheData = this.$data.cacheRawData.filter(item => item.type === "cc.Texture2D");
             } else {
                 this.$data.cacheData = this.$data.cacheRawData;
             }
@@ -153,15 +154,15 @@ const app = new Vue({
             this.$data.cacheDialog = true;
         },
         openGithub() {
-            window.open('https://github.com/potato47/ccc-devtools');
+            window.open("https://github.com/potato47/ccc-devtools");
         },
         openCocosForum() {
-            window.open('https://forum.cocos.com/');
+            window.open("https://forum.cocos.com/");
         },
         openCocosDocs() {
-            window.open('https://docs.cocos.com/');
-        }
-    }
+            window.open("https://docs.cocos.com/");
+        },
+    },
 });
 
 function getChildren(node) {
@@ -185,7 +186,7 @@ function getNodeById(id) {
                 }
             }
         }
-    }
+    };
     const scene = cc.director.getScene();
     search(scene);
     return target;
