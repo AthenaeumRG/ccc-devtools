@@ -120,43 +120,46 @@ const initConsoleUtil = function () {
         let rawCacheData = cc.assetManager.assets._map;
         let cacheData = [];
         let totalTextureSize = 0;
+
         for (let k in rawCacheData) {
-            let item = rawCacheData[k];
-            if (item.type !== "js" && item.type !== "json") {
-                let itemName = "_";
-                let preview = "";
-                let content = item.__classname__;
-                let formatSize = -1;
-                if (item.type === "png" || item.type === "jpg") {
-                    let texture = rawCacheData[k.replace("." + item.type, ".json")];
-                    if (texture && texture._owner && texture._owner._name) {
-                        itemName = texture._owner._name;
-                        preview = texture.content.url;
+            if (Object.prototype.hasOwnProperty.call(rawCacheData, key)) {
+                let item = rawCacheData[k];
+                if (item.type !== "js" && item.type !== "json") {
+                    let itemName = "_";
+                    let preview = "";
+                    let content = item.__classname__;
+                    let formatSize = -1;
+                    if (item.type === "png" || item.type === "jpg") {
+                        let texture = rawCacheData[k.replace("." + item.type, ".json")];
+                        if (texture && texture._owner && texture._owner._name) {
+                            itemName = texture._owner._name;
+                            preview = texture.content.url;
+                        }
+                    } else {
+                        if (item.name) {
+                            itemName = item.name;
+                        } else if (item._owner) {
+                            itemName = (item._owner && item._owner.name) || "_";
+                        }
+                        if (content === "cc.Texture2D") {
+                            preview = item.nativeUrl;
+                            let textureSize = item.width * item.height * ((item._native === ".jpg" ? 3 : 4) / 1024 / 1024);
+                            totalTextureSize += textureSize;
+                            // sizeStr = textureSize.toFixed(3) + 'M';
+                            formatSize = Math.round(textureSize * 1000) / 1000;
+                        } else if (content === "cc.SpriteFrame") {
+                            preview = item._texture.nativeUrl;
+                        }
                     }
-                } else {
-                    if (item.name) {
-                        itemName = item.name;
-                    } else if (item._owner) {
-                        itemName = (item._owner && item._owner.name) || "_";
-                    }
-                    if (content === "cc.Texture2D") {
-                        preview = item.nativeUrl;
-                        let textureSize = item.width * item.height * ((item._native === ".jpg" ? 3 : 4) / 1024 / 1024);
-                        totalTextureSize += textureSize;
-                        // sizeStr = textureSize.toFixed(3) + 'M';
-                        formatSize = Math.round(textureSize * 1000) / 1000;
-                    } else if (content === "cc.SpriteFrame") {
-                        preview = item._texture.nativeUrl;
-                    }
+                    cacheData.push({
+                        queueId: item.queueId,
+                        type: content,
+                        name: itemName,
+                        preview: preview,
+                        id: item._uuid,
+                        size: formatSize,
+                    });
                 }
-                cacheData.push({
-                    queueId: item.queueId,
-                    type: content,
-                    name: itemName,
-                    preview: preview,
-                    id: item._uuid,
-                    size: formatSize,
-                });
             }
         }
         let cacheTitle = `缓存 [文件总数:${cacheData.length}][纹理缓存:${totalTextureSize.toFixed(2) + "M"}]`;
